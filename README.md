@@ -16,23 +16,18 @@ So solution for this case is - use content provider. This lib is wrapper over co
 *Default sharedprefferences  
 
 `
-	private static final String PREF_TOKEN = "token";
-	
 	public static void saveToken(Context context, String token) {
-		PreferenceManager.getDefaultSharedPreferences(context).edit().putString(PREF_TOKEN, token).commit();or apply()
+		PreferenceManager.getDefaultSharedPreferences(context).edit().putString(PREF_TOKEN, token).commit();//or apply()
 	}
 	
 	public static String getToken(Context context){
 		return PreferenceManager.getDefaultSharedPreferences(context).getString(PREF_TOKEN, null);
 	}
-
 `
 
 *MultiprocessPreferences
 
 `
-	private static final String PREF_TOKEN = "token";
-	
 	public static void saveToken(Context context, String token) {
 		MultiprocessPreferences.getDefaultSharedPreferences(context).edit().putString(PREF_TOKEN, token).commit();//or apply()
 	}

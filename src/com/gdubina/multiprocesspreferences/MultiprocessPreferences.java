@@ -240,6 +240,10 @@ public class MultiprocessPreferences extends ContentProvider{
 		return new Editor(context);
 	}
 	
+	public static MultiprocessSharedPreferences getDefaultSharedPreferences(Context context){
+		return new MultiprocessSharedPreferences(context);
+	}
+	
 	public static class Editor{
 		
 		Context context;
@@ -302,10 +306,6 @@ public class MultiprocessPreferences extends ContentProvider{
 		
 		private MultiprocessSharedPreferences(Context context){
 			this.context = context;
-		}
-		
-		public static MultiprocessSharedPreferences getDefaultSharedPreferences(Context context){
-			return new MultiprocessSharedPreferences(context);
 		}
 		
 		public Editor edit(){

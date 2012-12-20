@@ -11,6 +11,19 @@ So solution for this case is - use content provider. This lib is wrapper over co
 **MultiprocessPreferences** - content provider which wraps sharedpreferences 
 **MultiprocessSharedPreferences** - emulate shared preferences class
 
+To use it you should declare provider in manifest 
+
+	<provider 
+            android:name="com.gdubina.multiprocesspreferences.MultiprocessPreferences" 
+            android:authorities="@string/multiprocess_preferences_authority"
+            android:exported="false"
+	/>
+    
+and define authority in strings.xml like this
+
+	<string name="multiprocess_preferences_authority">com.gdubina.multiprocesspreferences.PREFFERENCE_AUTHORITY</string>
+
+
 ##Example
 
 *Default sharedprefferences*  

@@ -1,0 +1,7 @@
+<resources>
+
+    <string name="app_name">MultiprocessPreferences</string>
+    
+    <string name="multiprocess_preferences_authority">com.gdubina.multiprocesspreferences.PREFFERENCE_AUTHORITY</string>
+
+</resources>

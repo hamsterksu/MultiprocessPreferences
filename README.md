@@ -13,9 +13,9 @@ So solution for this case is - use content provider. This lib is wrapper over co
 
 ##Example
 
-*Default sharedprefferences  
+*Default sharedprefferences*  
 
-`
+
 	public static void saveToken(Context context, String token) {
 		PreferenceManager.getDefaultSharedPreferences(context).edit().putString(PREF_TOKEN, token).commit();//or apply()
 	}
@@ -23,11 +23,12 @@ So solution for this case is - use content provider. This lib is wrapper over co
 	public static String getToken(Context context){
 		return PreferenceManager.getDefaultSharedPreferences(context).getString(PREF_TOKEN, null);
 	}
-`
 
-*MultiprocessPreferences
 
-`
+
+*MultiprocessPreferences*
+
+
 	public static void saveToken(Context context, String token) {
 		MultiprocessPreferences.getDefaultSharedPreferences(context).edit().putString(PREF_TOKEN, token).commit();//or apply()
 	}
@@ -35,4 +36,3 @@ So solution for this case is - use content provider. This lib is wrapper over co
 	public static String getToken(Context context){
 		return MultiprocessPreferences.getDefaultSharedPreferences(context).getString(PREF_TOKEN, null);
 	}
-`

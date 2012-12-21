@@ -11,28 +11,37 @@ So solution for this case is - use content provider. This lib is wrapper over co
 **MultiprocessPreferences** - content provider which wraps sharedpreferences 
 **MultiprocessSharedPreferences** - emulate shared preferences class
 
+To use it you should declare provider in manifest 
+
+	<provider 
+            android:name="com.gdubina.multiprocesspreferences.MultiprocessPreferences" 
+            android:authorities="@string/multiprocess_preferences_authority"
+            android:exported="false"
+	/>
+    
+and define authority in strings.xml like this
+
+	<string name="multiprocess_preferences_authority">com.gdubina.multiprocesspreferences.PREFFERENCE_AUTHORITY</string>
+
+
 ##Example
 
-*Default sharedprefferences  
+*Default sharedprefferences*  
 
-`
-	private static final String PREF_TOKEN = "token";
-	
+
 	public static void saveToken(Context context, String token) {
-		PreferenceManager.getDefaultSharedPreferences(context).edit().putString(PREF_TOKEN, token).commit();or apply()
+		PreferenceManager.getDefaultSharedPreferences(context).edit().putString(PREF_TOKEN, token).commit();//or apply()
 	}
 	
 	public static String getToken(Context context){
 		return PreferenceManager.getDefaultSharedPreferences(context).getString(PREF_TOKEN, null);
 	}
 
-`
 
-*MultiprocessPreferences
 
-`
-	private static final String PREF_TOKEN = "token";
-	
+*MultiprocessPreferences*
+
+
 	public static void saveToken(Context context, String token) {
 		MultiprocessPreferences.getDefaultSharedPreferences(context).edit().putString(PREF_TOKEN, token).commit();//or apply()
 	}
@@ -40,4 +49,3 @@ So solution for this case is - use content provider. This lib is wrapper over co
 	public static String getToken(Context context){
 		return MultiprocessPreferences.getDefaultSharedPreferences(context).getString(PREF_TOKEN, null);
 	}
-`

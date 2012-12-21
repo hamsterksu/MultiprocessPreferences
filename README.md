@@ -21,7 +21,7 @@ To use it you should declare provider in manifest
     
 and define authority in strings.xml like this
 
-	<string name="multiprocess_preferences_authority">com.gdubina.multiprocesspreferences.PREFFERENCE_AUTHORITY</string>
+	<string name="multiprocess_preferences_authority" translatable="false">com.gdubina.multiprocesspreferences.PREFFERENCE_AUTHORITY</string>
 
 
 ##Example

@@ -59,13 +59,12 @@ public class MultiprocessPreferences extends ContentProvider{
 	@Override
 	public int delete(Uri uri, String selection, String[] selectionArgs) {
 		switch (matcher.match(uri)) {
-		case MATCH_DATA:
-			SharedPreferences.Editor editor = PreferenceManager.getDefaultSharedPreferences(getContext().getApplicationContext()).edit();
-			editor.clear();
-			editor.commit();
-			break;
-		default:
-			throw new IllegalArgumentException("Unsupported uri " + uri);
+			case MATCH_DATA:
+				PreferenceManager.getDefaultSharedPreferences(getContext().getApplicationContext())
+				.edit().clear().commit();
+				break;
+			default:
+				throw new IllegalArgumentException("Unsupported uri " + uri);
 		}
 
 		return 0;
@@ -75,35 +74,35 @@ public class MultiprocessPreferences extends ContentProvider{
 	@Override
 	public Uri insert(Uri uri, ContentValues values) {
 		switch (matcher.match(uri)) {
-		case MATCH_DATA:
-			SharedPreferences.Editor editor = PreferenceManager.getDefaultSharedPreferences(getContext().getApplicationContext()).edit();
-			for (Entry<String, Object> entry : values.valueSet()) {
-				final Object value = entry.getValue();
-				final String key = entry.getKey();
-				if(value == null){
-					editor.remove(key);
-				}else if (value instanceof Long)
-					editor.putLong(key, (Long) value);
-				else if (value instanceof Integer)
-					editor.putInt(key, (Integer) value);
-				else if (value instanceof Float)
-					editor.putFloat(key, (Float) value);
-				else if (value instanceof Boolean)
-					editor.putBoolean(key, (Boolean) value);
-				else if (value instanceof String)
-					editor.putString(key, (String) value);
-				else {
-					throw new IllegalArgumentException("Unsupported type " + uri);
+			case MATCH_DATA:
+				SharedPreferences.Editor editor = PreferenceManager.getDefaultSharedPreferences(getContext().getApplicationContext()).edit();
+				for (Entry<String, Object> entry : values.valueSet()) {
+					final Object value = entry.getValue();
+					final String key = entry.getKey();
+					if(value == null){
+						editor.remove(key);
+					}else if (value instanceof String)
+						editor.putString(key, (String) value);
+					else if (value instanceof Boolean)
+						editor.putBoolean(key, (Boolean) value);
+					else if (value instanceof Long)
+						editor.putLong(key, (Long) value);
+					else if (value instanceof Integer)
+						editor.putInt(key, (Integer) value);
+					else if (value instanceof Float)
+						editor.putFloat(key, (Float) value);
+					else {
+						throw new IllegalArgumentException("Unsupported type " + uri);
+					}
 				}
-			}
-			if(Build.VERSION.SDK_INT > Build.VERSION_CODES.FROYO){
-				editor.apply();
-			}else{
-				editor.commit();
-			}
-			break;
-		default:
-			throw new IllegalArgumentException("Unsupported uri " + uri);
+				if(Build.VERSION.SDK_INT > Build.VERSION_CODES.FROYO){
+					editor.apply();
+				}else{
+					editor.commit();
+				}
+				break;
+			default:
+				throw new IllegalArgumentException("Unsupported uri " + uri);
 		}
 
 		return null;
@@ -113,32 +112,32 @@ public class MultiprocessPreferences extends ContentProvider{
 	public Cursor query(Uri uri, String[] projection, String selection, String[] selectionArgs, String sortOrder) {
 		MatrixCursor cursor = null;
 		switch (matcher.match(uri)) {
-		case MATCH_DATA:
-			final String key = uri.getPathSegments().get(0);
-			final String type = uri.getPathSegments().get(1);
-			cursor = new MatrixCursor(new String[] { key });
-			SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(getContext().getApplicationContext());
-			if (!sharedPreferences.contains(key))
-				return cursor;
-			MatrixCursor.RowBuilder rowBuilder = cursor.newRow();
-			Object object = null;
-			if (STRING_TYPE.equals(type)) {
-				object = sharedPreferences.getString(key, null);
-			} else if (BOOLEAN_TYPE.equals(type)) {
-				object = sharedPreferences.getBoolean(key, false) ? 1 : 0;
-			} else if (INT_TYPE.equals(type)) {
-				object = sharedPreferences.getInt(key, 0);
-			} else if (LONG_TYPE.equals(type)) {
-				object = sharedPreferences.getLong(key, 0l);
-			} else if (FLOAT_TYPE.equals(type)) {
-				object = sharedPreferences.getFloat(key, 0f);
-			} else {
-				throw new IllegalArgumentException("Unsupported type " + uri);
-			}
-			rowBuilder.add(object);
-			break;
-		default:
-			throw new IllegalArgumentException("Unsupported uri " + uri);
+			case MATCH_DATA:
+				final String key = uri.getPathSegments().get(0);
+				final String type = uri.getPathSegments().get(1);
+				cursor = new MatrixCursor(new String[] { key });
+				SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(getContext().getApplicationContext());
+				if (!sharedPreferences.contains(key))
+					return cursor;
+				MatrixCursor.RowBuilder rowBuilder = cursor.newRow();
+				Object object = null;
+				if (STRING_TYPE.equals(type)) {
+					object = sharedPreferences.getString(key, null);
+				} else if (BOOLEAN_TYPE.equals(type)) {
+					object = sharedPreferences.getBoolean(key, false) ? 1 : 0;
+				} else if (LONG_TYPE.equals(type)) {
+					object = sharedPreferences.getLong(key, 0l);
+				} else if (INT_TYPE.equals(type)) {
+					object = sharedPreferences.getInt(key, 0);
+				} else if (FLOAT_TYPE.equals(type)) {
+					object = sharedPreferences.getFloat(key, 0f);
+				} else {
+					throw new IllegalArgumentException("Unsupported type " + uri);
+				}
+				rowBuilder.add(object);
+				break;
+			default:
+				throw new IllegalArgumentException("Unsupported uri " + uri);
 		}
 		return cursor;
 	}
@@ -146,39 +145,6 @@ public class MultiprocessPreferences extends ContentProvider{
 	@Override
 	public int update(Uri uri, ContentValues values, String selection, String[] selectionArgs) {
 		throw new UnsupportedOperationException();
-	}
-	
-	private static final Uri getContentUri(String key, String type){
-		return BASE_URI.buildUpon().appendPath(key).appendPath(type).build();
-	}
-	
-	public static void clear(Context context){
-		context.getContentResolver().delete(getContentUri(KEY, TYPE), null, null);
-	} 
-	
-	public static String getString(Context context, String key, String def) {
-		Cursor cursor = context.getContentResolver().query(getContentUri(key, STRING_TYPE), null, null, null, null);
-		return getStringValue(cursor, def);
-	}
-	
-	public static long getLong(Context context, String key, long def) {
-		Cursor cursor = context.getContentResolver().query(getContentUri(key, LONG_TYPE), null, null, null, null);
-		return getLongValue(cursor, def);
-	}
-	
-	public static float getFloat(Context context, String key, float def) {
-		Cursor cursor = context.getContentResolver().query(getContentUri(key, FLOAT_TYPE), null, null, null, null);
-		return getFloatValue(cursor, def);
-	}
-	
-	public static boolean getBoolean(Context context, String key, boolean def) {
-		Cursor cursor = context.getContentResolver().query(getContentUri(key, BOOLEAN_TYPE), null, null, null, null);
-		return getBooleanValue(cursor, def);
-	}
-	
-	public static int getInt(Context context, String key, int def) {
-		Cursor cursor = context.getContentResolver().query(getContentUri(key, INT_TYPE), null, null, null, null);
-		return getIntValue(cursor, def);
 	}
 	
 	private static String getStringValue(Cursor cursor, String def) {	
@@ -255,7 +221,7 @@ public class MultiprocessPreferences extends ContentProvider{
 		private ContentValues values = new ContentValues();
 
 		public void apply(){
-			context.getContentResolver().insert(getContentUri(KEY, TYPE), values);		
+			context.getContentResolver().insert(getContentUri(context, KEY, TYPE), values);		
 		}
 		
 		public void commit(){
@@ -296,7 +262,7 @@ public class MultiprocessPreferences extends ContentProvider{
 		 * So it's sync method.  
 		 */
 		public void clear(){
-			MultiprocessPreferences.clear(context);
+			context.getContentResolver().delete(getContentUri(context, KEY, TYPE), null, null);
 		}
 	}
 	
@@ -313,23 +279,36 @@ public class MultiprocessPreferences extends ContentProvider{
 		}
 		
 		public String getString(String key, String def) {
-			return MultiprocessPreferences.getString(context, key, def);
+			Cursor cursor = context.getContentResolver().query(getContentUri(context, key, STRING_TYPE), null, null, null, null);
+			return getStringValue(cursor, def);
 		}
 		
 		public long getLong(String key, long def) {
-			return MultiprocessPreferences.getLong(context, key, def);
+			Cursor cursor = context.getContentResolver().query(getContentUri(context, key, LONG_TYPE), null, null, null, null);
+			return getLongValue(cursor, def);
 		}
 		
 		public float getFloat(String key, float def) {
-			return MultiprocessPreferences.getFloat(context, key, def);
+			Cursor cursor = context.getContentResolver().query(getContentUri(context, key, FLOAT_TYPE), null, null, null, null);
+			return getFloatValue(cursor, def);
 		}
 		
 		public boolean getBoolean(String key, boolean def) {
-			return MultiprocessPreferences.getBoolean(context, key, def);
+			Cursor cursor = context.getContentResolver().query(getContentUri(context, key, BOOLEAN_TYPE), null, null, null, null);
+			return getBooleanValue(cursor, def);
 		}
 		
 		public int getInt(String key, int def) {
-			return MultiprocessPreferences.getInt(context, key, def);
+			Cursor cursor = context.getContentResolver().query(getContentUri(context, key, INT_TYPE), null, null, null, null);
+			return getIntValue(cursor, def);
 		}
+
+	}
+	
+	private static final Uri getContentUri(Context context, String key, String type){
+		if(BASE_URI == null){
+			init(context);
+		}
+		return BASE_URI.buildUpon().appendPath(key).appendPath(type).build();
 	}
 }

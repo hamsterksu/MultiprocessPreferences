@@ -1,1 +1,0 @@
-int string multiprocess_preferences_authority 0x7f020000

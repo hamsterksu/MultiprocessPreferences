@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="utf-8"?>
+<manifest xmlns:android="http://schemas.android.com/apk/res/android"
+    package="com.gdubina.multiprocesspreferences.test" >
+
+    <uses-sdk
+        android:minSdkVersion="8"
+        android:targetSdkVersion="16" />
+
+    <instrumentation
+        android:name="android.test.InstrumentationTestRunner"
+        android:functionalTest="false"
+        android:handleProfiling="false"
+        android:label="Tests for com.gdubina.multiprocesspreferences.test"
+        android:targetPackage="com.gdubina.multiprocesspreferences.test" />
+
+    <application android:allowBackup="true" >
+        <uses-library android:name="android.test.runner" />
+
+        <provider
+            android:name="com.gdubina.multiprocesspreferences.MultiprocessPreferences"
+            android:authorities="@string/multiprocess_preferences_authority"
+            android:exported="false" />
+    </application>
+
+</manifest>

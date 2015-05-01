@@ -7,7 +7,7 @@
         android:allowBackup="true">
         
         <provider 
-            android:name="com.gdubina.multiprocesspreferences.MultiprocessPreferences" 
+            android:name=".PreferencesProvider"
             android:authorities="@string/multiprocess_preferences_authority"
             android:exported="false"
 		/>

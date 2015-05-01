@@ -1,8 +1,9 @@
 package com.gdubina.multiprocesspreferences;
 
-class Constants {
+public class Types {
     public static final String TYPE = "type";
     public static final String KEY = "key";
+
     public static final String INT_TYPE = "integer";
     public static final String LONG_TYPE = "long";
     public static final String FLOAT_TYPE = "float";

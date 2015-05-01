@@ -15,18 +15,20 @@ import android.net.Uri;
 import android.os.Build;
 import android.preference.PreferenceManager;
 
-public class PreferencesProvider extends ContentProvider {
+public class PreferencesProvider extends ContentProvider implements SharedPreferences.OnSharedPreferenceChangeListener {
 
-	public static String PREFFERENCE_AUTHORITY;
-	public static Uri BASE_URI;
+	private static String PREFFERENCE_AUTHORITY;
+	private static Uri BASE_URI;
 
 	private static final int MATCH_DATA = 0x010000;
 	
 	private static UriMatcher matcher;
-	
+
+	private SharedPreferences prefs;
+
 	private static void init(Context context){
 		
-		PREFFERENCE_AUTHORITY = context.getString(R.string.multiprocess_preferences_authority);
+		PREFFERENCE_AUTHORITY = context.getResources().getString(R.string.multiprocess_preferences_authority);
 		
 		matcher = new UriMatcher(UriMatcher.NO_MATCH);
 		matcher.addURI(PREFFERENCE_AUTHORITY, "*/*", MATCH_DATA);
@@ -36,6 +38,8 @@ public class PreferencesProvider extends ContentProvider {
 	
 	@Override
 	public boolean onCreate() {
+		prefs = PreferenceManager.getDefaultSharedPreferences(getContext().getApplicationContext());
+		prefs.registerOnSharedPreferenceChangeListener(this);
 		if(matcher == null){
 			init(getContext());
 		}
@@ -51,8 +55,7 @@ public class PreferencesProvider extends ContentProvider {
 	public int delete(Uri uri, String selection, String[] selectionArgs) {
 		switch (matcher.match(uri)) {
 			case MATCH_DATA:
-				PreferenceManager.getDefaultSharedPreferences(getContext().getApplicationContext())
-					.edit().clear().commit();
+				prefs.edit().clear().commit();
 				break;
 			default:
 				throw new IllegalArgumentException("Unsupported uri " + uri);
@@ -66,8 +69,7 @@ public class PreferencesProvider extends ContentProvider {
 	public Uri insert(Uri uri, ContentValues values) {
 		switch (matcher.match(uri)) {
 			case MATCH_DATA:
-				SharedPreferences.Editor editor = PreferenceManager.getDefaultSharedPreferences(
-						getContext().getApplicationContext()).edit();
+				SharedPreferences.Editor editor = prefs.edit();
 				for (Entry<String, Object> entry : values.valueSet()) {
 					final Object value = entry.getValue();
 					final String key = entry.getKey();
@@ -108,22 +110,20 @@ public class PreferencesProvider extends ContentProvider {
 				final String key = uri.getPathSegments().get(0);
 				final String type = uri.getPathSegments().get(1);
 				cursor = new MatrixCursor(new String[] { key });
-				SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(
-						getContext().getApplicationContext());
-				if (!sharedPreferences.contains(key))
+				if (!prefs.contains(key))
 					return cursor;
 				MatrixCursor.RowBuilder rowBuilder = cursor.newRow();
 				Object object = null;
-				if (Constants.STRING_TYPE.equals(type)) {
-					object = sharedPreferences.getString(key, null);
-				} else if (Constants.BOOLEAN_TYPE.equals(type)) {
-					object = sharedPreferences.getBoolean(key, false) ? 1 : 0;
-				} else if (Constants.LONG_TYPE.equals(type)) {
-					object = sharedPreferences.getLong(key, 0l);
-				} else if (Constants.INT_TYPE.equals(type)) {
-					object = sharedPreferences.getInt(key, 0);
-				} else if (Constants.FLOAT_TYPE.equals(type)) {
-					object = sharedPreferences.getFloat(key, 0f);
+				if (Types.STRING_TYPE.equals(type)) {
+					object = prefs.getString(key, null);
+				} else if (Types.BOOLEAN_TYPE.equals(type)) {
+					object = prefs.getBoolean(key, false) ? 1 : 0;
+				} else if (Types.LONG_TYPE.equals(type)) {
+					object = prefs.getLong(key, 0l);
+				} else if (Types.INT_TYPE.equals(type)) {
+					object = prefs.getInt(key, 0);
+				} else if (Types.FLOAT_TYPE.equals(type)) {
+					object = prefs.getFloat(key, 0f);
 				} else {
 					throw new IllegalArgumentException("Unsupported type " + uri);
 				}
@@ -140,10 +140,40 @@ public class PreferencesProvider extends ContentProvider {
 		throw new UnsupportedOperationException();
 	}
 
+	@Override
+	public void onSharedPreferenceChanged(SharedPreferences sharedPreferences, String key) {
+		String type = null;
+		for (Entry<String, ?> entry: sharedPreferences.getAll().entrySet()) {
+			if(key.equals(entry.getKey())) {
+				Object value = entry.getValue();
+				if (value instanceof Integer) {
+					type = Types.INT_TYPE;
+				} else if (value instanceof Float) {
+					type = Types.FLOAT_TYPE;
+				} else if (value instanceof Long) {
+					type = Types.LONG_TYPE;
+				} else if (value instanceof String) {
+					type = Types.STRING_TYPE;
+				} else if (value instanceof  Boolean) {
+					type = Types.BOOLEAN_TYPE;
+				}
+				break;
+			}
+		}
+		if (type != null) {
+			Uri uri = getContentUri(getContext(), key, type);
+			getContext().getContentResolver().notifyChange(uri, null);
+		}
+	}
+
 	public static final Uri getContentUri(Context context, String key, String type){
 		if(BASE_URI == null){
 			init(context);
 		}
 		return BASE_URI.buildUpon().appendPath(key).appendPath(type).build();
+	}
+
+	public static Uri getBaseUri() {
+		return BASE_URI;
 	}
 }

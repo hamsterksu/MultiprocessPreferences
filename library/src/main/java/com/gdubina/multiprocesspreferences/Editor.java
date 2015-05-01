@@ -15,7 +15,7 @@ class Editor {
 
     public void apply(){
         context.getContentResolver().insert(
-                PreferencesProvider.getContentUri(context, Constants.KEY, Constants.TYPE), values);
+                PreferencesProvider.getContentUri(context, Types.KEY, Types.TYPE), values);
     }
 
     public void commit(){
@@ -56,7 +56,7 @@ class Editor {
      * So it's sync method.
      */
     public void clear(){
-        Uri uri = PreferencesProvider.getContentUri(context, Constants.KEY, Constants.TYPE);
+        Uri uri = PreferencesProvider.getContentUri(context, Types.KEY, Types.TYPE);
         context.getContentResolver().delete(uri, null, null);
     }
 }

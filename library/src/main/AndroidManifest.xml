@@ -10,7 +10,7 @@
             android:name=".PreferencesProvider"
             android:authorities="@string/multiprocess_preferences_authority"
             android:exported="false"
-		/>
+            android:multiprocess="false" />
     </application>
 
 </manifest>

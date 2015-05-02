@@ -14,8 +14,11 @@ import android.database.MatrixCursor;
 import android.net.Uri;
 import android.os.Build;
 import android.preference.PreferenceManager;
+import android.util.Log;
 
 public class PreferencesProvider extends ContentProvider implements SharedPreferences.OnSharedPreferenceChangeListener {
+
+	public static final String TAG = PreferencesProvider.class.getName();
 
 	private static String PREFFERENCE_AUTHORITY;
 	private static Uri BASE_URI;
@@ -34,6 +37,9 @@ public class PreferencesProvider extends ContentProvider implements SharedPrefer
 		matcher.addURI(PREFFERENCE_AUTHORITY, "*/*", MATCH_DATA);
 		
 		BASE_URI = Uri.parse("content://" + PREFFERENCE_AUTHORITY);
+
+		Log.d(TAG, String.format("Authority: %s", PREFFERENCE_AUTHORITY));
+		Log.d(TAG, String.format("Base Uri: %s ", BASE_URI));
 	}
 	
 	@Override
@@ -173,7 +179,10 @@ public class PreferencesProvider extends ContentProvider implements SharedPrefer
 		return BASE_URI.buildUpon().appendPath(key).appendPath(type).build();
 	}
 
-	public static Uri getBaseUri() {
+	public static Uri getBaseUri(Context context) {
+		if(BASE_URI == null){
+			init(context);
+		}
 		return BASE_URI;
 	}
 }

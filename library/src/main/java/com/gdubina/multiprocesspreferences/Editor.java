@@ -4,7 +4,7 @@ import android.content.ContentValues;
 import android.content.Context;
 import android.net.Uri;
 
-class Editor {
+public class Editor {
     Context context;
 
     public Editor(Context context){

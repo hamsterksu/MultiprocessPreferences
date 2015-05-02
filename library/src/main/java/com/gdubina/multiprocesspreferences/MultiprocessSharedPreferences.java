@@ -9,15 +9,17 @@ import java.lang.ref.WeakReference;
 import java.util.ArrayList;
 import java.util.List;
 
-class MultiprocessSharedPreferences {
+public class MultiprocessSharedPreferences {
+
     private Context context;
-    private List<WeakReference<OnSharedPreferencesChangeListener>> listeners;
+    private List<WeakReference<OnSharedPreferenceChangeListener>> listeners;
 
     public MultiprocessSharedPreferences(Context context){
         this.context = context;
-        this.listeners = new ArrayList<WeakReference<OnSharedPreferencesChangeListener>>();
+        this.listeners = new ArrayList<WeakReference<OnSharedPreferenceChangeListener>>();
         context.getContentResolver().registerContentObserver(
-                PreferencesProvider.getBaseUri(), true, new Observer());
+                PreferencesProvider.getBaseUri(context), true, new Observer());
+
     }
 
     public Editor edit(){
@@ -54,16 +56,18 @@ class MultiprocessSharedPreferences {
         return CursorUtils.getIntValue(cursor, def);
     }
 
-    public void registerOnSharedPreferenceChangeListener(OnSharedPreferencesChangeListener listener) {
+    public void registerOnSharedPreferenceChangeListener(OnSharedPreferenceChangeListener listener) {
         if (listener != null) {
-            listeners.add(new WeakReference<OnSharedPreferencesChangeListener>(listener));
+            listeners.add(new WeakReference<OnSharedPreferenceChangeListener>(listener));
         }
     }
 
-    public interface OnSharedPreferencesChangeListener {
-        void onMultiProcessPreferenceChange();
-        void onMultiProcessPreferenceChange(String key, String type);
+    public void unregisterOnSharedPreferenceChangeListener(OnSharedPreferenceChangeListener listener) {
+        if (listener != null) {
+            listeners.remove(new WeakReference<OnSharedPreferenceChangeListener>(listener));
+        }
     }
+
 
     private class Observer extends ContentObserver {
 
@@ -71,30 +75,29 @@ class MultiprocessSharedPreferences {
             super(null);
         }
 
+        //SDK_INT < 16
         @Override
         public void onChange(boolean selfChange) {
             super.onChange(selfChange);
-            onChange(selfChange, null);
+            for (WeakReference<OnSharedPreferenceChangeListener> ref : listeners) {
+                OnSharedPreferenceChangeListener listener = ref.get();
+                if (listener != null) {
+                    listener.onMultiProcessPreferenceChange();
+                }
+            }
         }
 
+        //SDK_INT >= 16
         @Override
         public void onChange(boolean selfChange, Uri uri) {
             super.onChange(selfChange, uri);
             if (uri != null) {
                 final String key = uri.getPathSegments().get(0);
                 final String type = uri.getPathSegments().get(1);
-                for (WeakReference<OnSharedPreferencesChangeListener> ref: listeners) {
-                    OnSharedPreferencesChangeListener listener = ref.get();
+                for (WeakReference<OnSharedPreferenceChangeListener> ref: listeners) {
+                    OnSharedPreferenceChangeListener listener = ref.get();
                     if (listener != null) {
                         listener.onMultiProcessPreferenceChange(key, type);
-                    }
-                }
-            }
-            else {
-                for (WeakReference<OnSharedPreferencesChangeListener> ref: listeners) {
-                    OnSharedPreferencesChangeListener listener = ref.get();
-                    if (listener != null) {
-                        listener.onMultiProcessPreferenceChange();
                     }
                 }
             }

@@ -26,6 +26,9 @@
 
         <service android:name=".SampleService"
             android:process=":service"/>
+
+        <service android:name=".SampleService2"
+                 android:process=":service2"/>
     </application>
 
 </manifest>

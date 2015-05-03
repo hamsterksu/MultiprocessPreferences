@@ -14,13 +14,16 @@ public class MainActivity extends ActionBarActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+        //start services in separate processes
         startService(new Intent(this, SampleService.class));
+        startService(new Intent(this, SampleService2.class));
     }
 
     @Override
     protected void onDestroy() {
         super.onDestroy();
         stopService(new Intent(this, SampleService.class));
+        stopService(new Intent(this, SampleService2.class));
     }
 
     @Override
@@ -39,7 +42,7 @@ public class MainActivity extends ActionBarActivity {
 
         //noinspection SimplifiableIfStatement
         if (id == R.id.action_settings) {
-            if (Build.VERSION.SDK_INT <= Build.VERSION_CODES.HONEYCOMB) {
+            if (Build.VERSION.SDK_INT < Build.VERSION_CODES.HONEYCOMB) {
                 startActivity(new Intent(this, SettingsActivityCompat.class));
             }
             else {

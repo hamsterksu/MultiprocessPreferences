@@ -7,7 +7,7 @@ public class MultiprocessPreferenceManager {
 
     public static MultiprocessSharedPreferences getDefaultSharedPreferences(Context context) {
         if (sPreferences == null) {
-            sPreferences = new MultiprocessSharedPreferences(context);
+            sPreferences = new Preferences(context);
         }
         return sPreferences;
     }

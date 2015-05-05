@@ -4,6 +4,7 @@ import android.content.Context;
 import android.database.ContentObserver;
 import android.database.Cursor;
 import android.net.Uri;
+import android.os.Handler;
 
 import java.lang.ref.WeakReference;
 import java.util.ArrayList;
@@ -111,7 +112,7 @@ public class Preferences implements MultiprocessSharedPreferences {
     private class Observer extends ContentObserver {
 
         public Observer() {
-            super(null);
+            super(new Handler());
         }
 
         //SDK_INT < 16

@@ -1,15 +1,12 @@
 package com.gdubina.multiprocesspreferences.sample;
 
 import android.app.Service;
-import android.content.ComponentName;
 import android.content.Intent;
-import android.content.pm.PackageManager;
 import android.os.IBinder;
 import android.util.Log;
 
 import com.gdubina.multiprocesspreferences.MultiprocessPreferenceManager;
 import com.gdubina.multiprocesspreferences.MultiprocessSharedPreferences;
-import com.gdubina.multiprocesspreferences.PreferencesProvider;
 
 
 //This example show how to use MultiprocessSharedPreferences
@@ -32,9 +29,11 @@ public class SampleService extends Service implements MultiprocessSharedPreferen
     public void onCreate() {
         super.onCreate();
 
+        /* Enabled by default
         ComponentName provider = new ComponentName(getApplicationContext(), PreferencesProvider.class.getName());
         getApplicationContext().getPackageManager().setComponentEnabledSetting(
                 provider, PackageManager.COMPONENT_ENABLED_STATE_ENABLED, PackageManager.DONT_KILL_APP);
+        */
 
         mPrefs = MultiprocessPreferenceManager.getDefaultSharedPreferences(this);
         mPrefs.registerOnMultiprocessPreferenceChangeListener(this);
@@ -48,9 +47,11 @@ public class SampleService extends Service implements MultiprocessSharedPreferen
     public void onDestroy() {
         super.onDestroy();
         mPrefs.unregisterOnMultiprocessPreferenceChangeListener(this);
+        /*
         ComponentName provider = new ComponentName(getApplicationContext(), PreferencesProvider.class.getName());
         getApplicationContext().getPackageManager().setComponentEnabledSetting(
                 provider, PackageManager.COMPONENT_ENABLED_STATE_DISABLED, PackageManager.DONT_KILL_APP);
+         */
     }
 
     //SDK_INT < 16

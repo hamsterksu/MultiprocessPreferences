@@ -1,18 +1,15 @@
 package com.gdubina.multiprocesspreferences.sample;
 
 import android.app.Service;
-import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
-import android.content.pm.PackageManager;
 import android.os.Build;
 import android.os.IBinder;
 import android.util.Log;
 
 import com.gdubina.multiprocesspreferences.MultiprocessPreferenceManager;
 import com.gdubina.multiprocesspreferences.MultiprocessSharedPreferences;
-import com.gdubina.multiprocesspreferences.PreferencesProvider;
 
 //This example show why you should use MultiprocessSharedPreferences on API 11+
 public class SampleService2 extends Service implements  SharedPreferences.OnSharedPreferenceChangeListener,
@@ -36,9 +33,11 @@ public class SampleService2 extends Service implements  SharedPreferences.OnShar
         super.onCreate();
 
         if (Build.VERSION.SDK_INT < Build.VERSION_CODES.HONEYCOMB) {
+            /* Enabled by default
             ComponentName provider = new ComponentName(getApplicationContext(), PreferencesProvider.class.getName());
             getApplicationContext().getPackageManager().setComponentEnabledSetting(
                     provider, PackageManager.COMPONENT_ENABLED_STATE_ENABLED, PackageManager.DONT_KILL_APP);
+             */
             mPrefs = MultiprocessPreferenceManager.getDefaultSharedPreferences(this);
             ((MultiprocessSharedPreferences)mPrefs ).registerOnMultiprocessPreferenceChangeListener(this);
         }
@@ -59,9 +58,11 @@ public class SampleService2 extends Service implements  SharedPreferences.OnShar
         super.onDestroy();
         if (Build.VERSION.SDK_INT < Build.VERSION_CODES.HONEYCOMB) {
             ((MultiprocessSharedPreferences) mPrefs).unregisterOnMultiprocessPreferenceChangeListener(this);
+            /*
             ComponentName provider = new ComponentName(getApplicationContext(), PreferencesProvider.class.getName());
             getApplicationContext().getPackageManager().setComponentEnabledSetting(
                     provider, PackageManager.COMPONENT_ENABLED_STATE_DISABLED, PackageManager.DONT_KILL_APP);
+            */
         }
         else {
             mPrefs.unregisterOnSharedPreferenceChangeListener(this);

@@ -20,13 +20,7 @@ See sample.
         	resValue("string", "multiprocess_preferences_authority","Your app id.PreferenceProvider")
     	}
 ```
-2) Enable content provider when your need it.
-```
-	ComponentName provider = new ComponentName(getApplicationContext(), PreferencesProvider.class.getName());
-        getApplicationContext().getPackageManager().setComponentEnabledSetting(
-                provider, PackageManager.COMPONENT_ENABLED_STATE_ENABLED, PackageManager.DONT_KILL_APP);
-```
-3) Use it as default shared preferences.
+2) Use it as default shared preferences.
 ```
 	MultiprocessSharedPreferences prefs = MultiprocessPreferenceManager.getDefaultSharedPreferences(this);
 ```

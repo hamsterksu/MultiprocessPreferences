@@ -3,18 +3,15 @@
     android:versionCode="1"
     android:versionName="1.0" >
 
-    <uses-sdk
-        android:minSdkVersion="8"
-        android:targetSdkVersion="16" />
-
     <application
         android:allowBackup="true">
         
         <provider 
-            android:name="com.gdubina.multiprocesspreferences.MultiprocessPreferences" 
+            android:name=".PreferencesProvider"
             android:authorities="@string/multiprocess_preferences_authority"
             android:exported="false"
-		/>
+            android:multiprocess="false"
+            android:enabled="true"/>
     </application>
 
 </manifest>

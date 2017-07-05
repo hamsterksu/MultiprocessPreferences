@@ -15,6 +15,7 @@ import android.net.Uri;
 import android.os.Build;
 import android.preference.PreferenceManager;
 import android.util.Log;
+import cloud.proxi.sdk.R;
 
 public class PreferencesProvider extends ContentProvider implements SharedPreferences.OnSharedPreferenceChangeListener {
 
